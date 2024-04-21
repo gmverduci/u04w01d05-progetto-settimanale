@@ -25,4 +25,23 @@ public class RegistrazioneAudio extends ElementoMultimediale implements Riproduc
         volume++;
     }
 
+    @Override
+    public void esegui() {
+        play();
+    }
+
+    @Override
+    public void options(String opzione, String azione) {
+        switch (opzione.toUpperCase()) {
+            case "VOLUME":
+                if (azione.equalsIgnoreCase("AUMENTA")) {
+                    alzaVolume();
+                } else if (azione.equalsIgnoreCase("DIMINUISCI")) {
+                    abbassaVolume();
+                }
+                break;
+            default:
+                System.out.println("Opzione non supportata.");
+        }
+    }
 }

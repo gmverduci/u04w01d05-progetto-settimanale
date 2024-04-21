@@ -27,4 +27,24 @@ public class Video extends ElementoMultimediale implements Riproducibile {
         }
     }
 
+    @Override
+    public void esegui() {
+        play();
+    }
+
+    @Override
+    public void options(String opzione, String azione) {
+        switch (opzione.toUpperCase()) {
+            case "LUMINOSITA":
+                if (azione.equalsIgnoreCase("AUMENTA")) {
+                    aumentaLuminosita();
+                } else if (azione.equalsIgnoreCase("DIMINUISCI")) {
+                    diminuisciLuminosita();
+                }
+                break;
+            default:
+                System.out.println("Opzione non supportata.");
+        }
+    }
+
 }

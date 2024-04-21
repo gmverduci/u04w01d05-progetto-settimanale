@@ -21,4 +21,10 @@ public abstract class ElementoMultimediale {
     public String getTipoFile() {
         return tipoFile;
     }
+
+    public abstract void esegui();
+
+    public abstract void options(String opzione, String azione);
+
+
 }

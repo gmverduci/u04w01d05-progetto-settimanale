@@ -1,12 +1,9 @@
-package main;
-
 import multimedia.ElementoMultimediale;
 import multimedia.Immagine;
 import multimedia.RegistrazioneAudio;
 import multimedia.Riproducibile;
 import multimedia.Video;
 
-import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class LettoreMultimediale {
@@ -17,64 +14,94 @@ public class LettoreMultimediale {
 
         for (int i = 0; i < 5; i++) {
             System.out.println("Indica il tipo di elemento (Audio, Video o Immagine):");
-            System.out.println("Scrivi come vuoi: non è case-sensitive (Es. Audio, audio o AUDIO).");
+            System.out.println("(Scrivi come vuoi, non è case sensitive.)");
             String tipo = scanner.next();
-            if (!tipo.equalsIgnoreCase("Audio") && !tipo.equalsIgnoreCase("Video") && !tipo.equalsIgnoreCase("Immagine")) {
-                System.out.println("Tipo non esistente!");
-                return;
-            } else {
-                scanner.nextLine();
+            scanner.nextLine();
 
-                System.out.println("Inserisci il titolo:");
-                String titolo = scanner.nextLine();
+            System.out.println("Inserisci il titolo:");
+            String titolo = scanner.nextLine();
 
-                if (tipo.equalsIgnoreCase("Audio")) {
+            switch (tipo.toLowerCase()) {
+                case "audio":
                     System.out.println("Inserisci la durata:");
-                    int durata = scanner.nextInt();
+                    int durataAudio = scanner.nextInt();
                     System.out.println("Inserisci il volume:");
-                    int volume = scanner.nextInt();
-                    playlist[i] = new RegistrazioneAudio(titolo, durata, volume, "Audio");
-                } else if (tipo.equalsIgnoreCase("Video")) {
+                    int volumeAudio = scanner.nextInt();
+                    playlist[i] = new RegistrazioneAudio(titolo, durataAudio, volumeAudio, "Audio");
+                    break;
+                case "video":
                     System.out.println("Inserisci la durata:");
-                    int durata = scanner.nextInt();
+                    int durataVideo = scanner.nextInt();
                     System.out.println("Inserisci il volume:");
-                    int volume = scanner.nextInt();
+                    int volumeVideo = scanner.nextInt();
                     System.out.println("Inserisci la luminosità:");
                     int luminosita = scanner.nextInt();
-                    playlist[i] = new Video(titolo, durata, volume, luminosita, "Video");
-                } else {
+                    playlist[i] = new Video(titolo, durataVideo, volumeVideo, luminosita, "Video");
+                    break;
+                case "immagine":
                     System.out.println("Inserisci la luminosità:");
-                    int luminosita = scanner.nextInt();
-                    playlist[i] = new Immagine(titolo, luminosita, "Immagine");
-                }
+                    int luminositaImmagine = scanner.nextInt();
+                    playlist[i] = new Immagine(titolo, luminositaImmagine, "Immagine");
+                    break;
+                default:
+                    System.out.println("Tipo non riconosciuto. Inserimento annullato.");
+                    i--;
+                    break;
             }
         }
 
+        ElementoMultimediale elementoInEsecuzione = null;
 
-        int scelta;
-        do {
-            System.out.println("Scegli dalla playlist:");
-            System.out.println("1: " + playlist[0].getTitolo() + ", Tipo: " + playlist[0].getTipoFile());
-            System.out.println("2: " + playlist[1].getTitolo() + ", Tipo: " + playlist[1].getTipoFile());
-            System.out.println("3: " + playlist[2].getTitolo() + ", Tipo: " + playlist[2].getTipoFile());
-            System.out.println("4: " + playlist[3].getTitolo() + ", Tipo: " + playlist[3].getTipoFile());
-            System.out.println("5: " + playlist[4].getTitolo() + ", Tipo: " + playlist[4].getTipoFile());
+        while (true) {
+            System.out.println("Scegli un'opzione:");
+            System.out.println("1: Esegui elemento multimediale");
+            System.out.println("2: Modifica opzioni (Volume o Luminosità) dell'ultimo elemento riprodotto");
+            System.out.println("0: Esci");
 
-            scelta = scanner.nextInt();
+            int scelta = scanner.nextInt();
 
-            if (scelta >= 1 && scelta <= 5) {
-                if (playlist[scelta - 1] instanceof Immagine) {
-                    ((Immagine) playlist[scelta - 1]).show();
-                } else {
-                    ((Riproducibile) playlist[scelta - 1]).play();
-                }
-            } else if (scelta != 0) {
-                System.out.println("Scelta non valida.");
+            switch (scelta) {
+                case 1:
+                    System.out.println("Scegli dalla playlist:");
+                    for (int i = 0; i < 5; i++) {
+                        System.out.println((i + 1) + " - Titolo: " + playlist[i].getTitolo() + ", Tipo: " + playlist[i].getTipoFile());
+                    }
+
+                    int indiceElemento = scanner.nextInt() - 1;
+
+                    if (indiceElemento >= 0 && indiceElemento < playlist.length) {
+                        elementoInEsecuzione = playlist[indiceElemento];
+                        elementoInEsecuzione.esegui();
+                    } else {
+                        System.out.println("Indice non valido.");
+                    }
+                    break;
+
+                case 2:
+                    if (elementoInEsecuzione != null) {
+                        if (elementoInEsecuzione instanceof RegistrazioneAudio) {
+                            System.out.println("Modifica volume (Aumenta o Diminuisci)");
+                            String azione = scanner.next();
+                            elementoInEsecuzione.options("volume", azione);
+                        } else if (elementoInEsecuzione instanceof Video || elementoInEsecuzione instanceof Immagine) {
+                            System.out.println("Modifica luminosità (Aumenta o Diminuisci):");
+                            String azione = scanner.next();
+                            elementoInEsecuzione.options("luminosità", azione);
+                        }
+                        elementoInEsecuzione.esegui();
+                    } else {
+                        System.out.println("Nessun elemento attualmente in esecuzione.");
+                    }
+                    break;
+
+                case 0:
+                    System.out.println("Chiusura Lettore Multimediale.");
+                    return;
+
+                default:
+                    System.out.println("Scelta non valida.");
+                    break;
             }
-        } while (scelta != 0);
-
-
-        System.out.println("Programma terminato.");
-        scanner.close();
+        }
     }
 }
